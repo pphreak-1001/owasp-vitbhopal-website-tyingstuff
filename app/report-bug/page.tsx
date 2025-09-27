@@ -1,6 +1,8 @@
 "use client"
 import { Container } from '@/components/container'
 import React, { useState } from 'react'
+import Header from '@/components/header'
+
 
 const BugReportForm = () => {
   const [form, setForm] = useState({
@@ -49,7 +51,7 @@ const BugReportForm = () => {
       } else {
         setError(data.error || "Failed to submit bug report.");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to submit bug report.");
     } finally {
       setLoading(false);
@@ -58,6 +60,9 @@ const BugReportForm = () => {
 
   return (
     <Container className="py-8 px-4 text-black bg-amber-300">
+      <Header title='Report a Bug'>
+        Over the years we&apos;ve transformed the face of cybersecurity, therby therefore realise regardless thereafter unrestored underestimated variety of various undisputed achievments
+      </Header>
       <div className="max-w-md mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Category Selection */}

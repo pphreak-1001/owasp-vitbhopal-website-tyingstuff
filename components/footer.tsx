@@ -5,9 +5,7 @@ import {
   extraFooterItems,
   socialMediaLinks,
 } from "@/Content/LayoutElements";
-import * as Icons from "@tabler/icons-react";
 
-type IconComponent = React.ComponentType<{ size?: number }>;
 
 const SocialIcon = ({ name, size = 20 }: { name: string; size?: number }) => {
   const iconProps = {

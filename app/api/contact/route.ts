@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
       return Response.json({ success: false, error: 'Message must be 1–2000 characters.' }, { status: 400 });
     }
 
-    const { data, error } = await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: 'OWASP VIT Bhopal Contact <onboarding@resend.dev>',
       to: [process.env.EMAIL_TO as string],
       subject: 'New Contact Form Submission - OWASP VIT Bhopal Student Chapter',

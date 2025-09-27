@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const ip = getIP(req);
 
-    const { data, error } = await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: 'OWASP VIT Bhopal Bug Report <onboarding@resend.dev>',
       to: [process.env.EMAIL_TO as string],
       subject: `Bug Report [${bugId}] - ${category}`,
