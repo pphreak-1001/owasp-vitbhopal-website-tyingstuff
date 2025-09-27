@@ -10,7 +10,7 @@ const page = () => {
   return (
     <Container className='min-h-screen overflow-x-hidden px-4 md:px-6 lg:px-8'>
       <Header title='Our Members'>
-        Over the years we've transformed the face of cybersecurity, therby therefore realise regardless thereafter unrestored underestimated variety of various undisputed achievments
+        Over the years we&apos;ve transformed the face of cybersecurity, therby therefore realise regardless thereafter unrestored underestimated variety of various undisputed achievments
       </Header>
 
       <div>

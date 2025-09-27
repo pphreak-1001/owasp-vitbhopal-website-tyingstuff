@@ -90,7 +90,7 @@ const page = () => {
   return (
     <Container className="min-h-screen px-4 md:px-6 lg:px-8">
       <Header title='Contact Us'>
-        Over the years we've transformed the face of cybersecurity, therby therefore realise regardless thereafter unrestored underestimated variety of various undisputed achievments
+        Over the years we&apos;ve transformed the face of cybersecurity, therby therefore realise regardless thereafter unrestored underestimated variety of various undisputed achievments
       </Header>
 
 
