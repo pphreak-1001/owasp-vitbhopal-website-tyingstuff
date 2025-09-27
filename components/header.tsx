@@ -1,15 +1,20 @@
 import React from 'react'
 
-const Header = () => {
+interface HeaderProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+const Header: React.FC<HeaderProps> = ({title, children}) => {
   return (
     <div className='flex flex-col lg:flex-row w-full items-start lg:items-center justify-between gap-8 lg:gap-0'>
         <div className='text-left w-full lg:w-[50%]'>
           <div className='w-fit'>
-            <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium'>Members</h1>
+            <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium'>{title}</h1>
           </div>
           <div className='text-left mt-4 text-[var(--muted-text)] max-w-lg'>
             <div className='w-full border-2 my-4 border-dashed border-white/12' />
-            <p className='text-sm md:text-base'>Over the years we&apos;ve transformed the face of cybersecurity, therby therefore realise regardless thereafter unrestored underestimated variety of various undisputed achievments </p>
+            <div className='text-sm md:text-base'>{children}</div>
           </div>
         </div>
         <div className='text-left w-full lg:w-[50%] hidden lg:block'>
