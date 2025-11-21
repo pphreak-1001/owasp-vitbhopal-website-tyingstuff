@@ -5,36 +5,58 @@ import Image from "next/image";
 interface AchievementCardProps {
   image: string;
   title: string;
-  gradientClass: string;
-  description: string;
+  subtitle?: string;
+  description?: string;
 }
 
-export default function AchievementCard({ image, title, gradientClass, description }: AchievementCardProps) {
+export default function AchievementCard({
+  image,
+  title,
+  subtitle,
+  description,
+}: AchievementCardProps) {
   return (
-    <div className="group flex flex-col md:flex-row items-start gap-6 bg-[#1a1a1d] border-2 border-gray-700 rounded-2xl p-6 relative shadow-xl overflow-visible">
-      <div
-        className={`absolute top-0 right-0 w-40 h-40 ${gradientClass} blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-300 rounded-tr-2xl`}
-      />
-      <div
-        className={`relative -mt-12 group-hover:-mt-10 p-1 rounded-xl ${gradientClass} shrink-0 group-hover:transition-transform group-hover:duration-300`}
-      >
-        <div className="bg-transparent group-hover:bg-white/10 rounded-xl overflow-hidden transition-colors duration-300">
-          <Image
-            src={image}
-            width={340}
-            height={200}
-            alt={title}
-            className="w-[450px] h-[230px] object-cover rounded-xl"
-          />
-        </div>
+    <div className="group relative w-[90%] rounded-2xl border border-gray-600/40 p-6 flex items-start gap-6 ml-14 mr-14 overflow-visible bg-white/5 backdrop-blur-[75px]">
+      {/* blurred accent circle (moved to image container) */}
+
+      {/* Photo - responsive 16:9 landscape aspect ratio, shrinks on smaller screens; capped max-height */}
+      <div className="relative w-full max-w-[900px] sm:max-w-[700px] md:max-w-[593px] sm:max-h-[480px] md:max-h-[800px] lg:max-h-[900px] max-h-[900px] aspect-[16/9] rounded-[18px] overflow-visible border-[3px] border-[#E18C50] bg-gradient-to-b from-transparent to-black -mt-10 z-30 shadow-2xl">
+        <div className="absolute -right-10 top-12 w-[187px] h-[187px] rounded-full bg-[#E58F52] blur-[40px] opacity-0 group-hover:opacity-70 transition-opacity duration-300 pointer-events-none -z-10" />
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-cover object-top"
+          priority
+        />
+
+        {/* dark gradient overlay to match design (keeps image visible but darker) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70 z-10" />
+
+        {subtitle && (
+          <div className="absolute left-4 bottom-4 w-[248px] flex items-center text-white text-[24px] font-extrabold leading-[15px] z-20">
+            {subtitle}
+          </div>
+        )}
       </div>
 
-      {/* Text */}
-      <div className="flex-1 text-gray-400 text-sm leading-relaxed">
-        <h3 className="text-gray-300 font-semibold mb-2">{title}</h3>
-        <p>
-          {description}
-        </p>
+      {/* Right content */}
+      <div className="relative z-10 flex-1 min-w-[300px]">
+        <div className="flex flex-col gap-3">
+          {/* translucent heading box */}
+          <div className=" px-4 text-[16px]">
+            <div className="text-[18px] font-bold text-white/60 leading-[15px]">
+              {title}
+            </div>
+          </div>
+
+          {/* description */}
+          {description && (
+            <p className="text-white/60 text-[16px] leading-[15px] max-w-[552px] mt-1">
+              {description}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
