@@ -6,34 +6,52 @@ type Props = {
 };
 
 /**
- * Loader component (fixed overlay + scoped CSS)
- * - The SVG animation and keyframes are preserved exactly (IDs and animation names unchanged).
- * - The overlay is fixed and does not modify page layout.
- * - Children are rendered as-is and only visually hidden until animation completes.
+ * Loader component (fixed full-page overlay)
+ * - SVG and animation names/IDs are preserved exactly.
+ * - The overlay covers the entire viewport with very high z-index so the animation is fully full-page.
+ * - Page scrolling is disabled while loader is active and restored after.
  */
 export default function Loader({ children }: Props) {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
     const candidateElement = document.getElementById('BannerContent_3_0');
-
     const handler = (event: AnimationEvent) => {
       if (event.animationName === 'animation_BannerContent_3_0_flow_7') {
-        // small delay to allow final transitions to run
+        // allow tiny delay for CSS transitions, then finish
         setTimeout(() => setDone(true), 50);
       }
     };
 
     candidateElement?.addEventListener('animationend', handler as EventListener);
 
+    // Disable page scroll while loader is visible
+    const originalOverflow = document.documentElement.style.overflow;
+    const originalBodyOverflow = document.body.style.overflow;
+    if (!done) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    }
+
     return () => {
       candidateElement?.removeEventListener('animationend', handler as EventListener);
+      // restore overflow when unmounting/cleanup (or when loader removed)
+      document.documentElement.style.overflow = originalOverflow;
+      document.body.style.overflow = originalBodyOverflow;
     };
-  }, []);
+  }, [done]);
+
+  useEffect(() => {
+    // When done becomes true, restore scrolling
+    if (done) {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    }
+  }, [done]);
 
   return (
     <>
-      {/* Fixed overlay for the loader. Does not change document flow. */}
+      {/* Full viewport fixed overlay — covers entire page */}
       {!done && (
         <div className="loader-overlay" aria-hidden="true">
           <div className="loader-inner" id="loadingContainer">
@@ -62,41 +80,45 @@ export default function Loader({ children }: Props) {
         </div>
       )}
 
-      {/* Children wrapper: does NOT change layout; only controls visibility during loading */}
+      {/* Children are rendered in-place; visibility is controlled but layout remains unchanged */}
       <div className={`loader-children ${done ? 'visible' : 'hidden'}`} id="loader-children">
         {children}
       </div>
 
-      {/* Scoped CSS only for loader elements (does NOT touch body/html/global rules). */}
+      {/* Scoped CSS only for loader overlay and animation assignments (animation keyframes unchanged) */}
       <style>{`
-        /* Overlay sits above everything but doesn't affect layout */
+        /* Full-page overlay that sits above everything */
         .loader-overlay {
           position: fixed;
-          inset: 0;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: transparent; /* let SVG alone manage its own visual */
-          z-index: 9999;
+          background: #000; /* match animation background so there is no flash */
+          z-index: 2147483647; /* very high to ensure it covers any site element */
           pointer-events: all;
         }
 
-        /* Inner container centers the SVG (keeps original SVG sizing/positioning) */
+        /* Inner container centers the SVG and keeps its original sizing */
         .loader-inner {
           width: 100%;
           max-width: 1200px;
           display: flex;
           justify-content: center;
           align-items: center;
+          padding: 0;
         }
 
         .loader-inner svg {
+          display: block;
           max-width: 100%;
           height: auto;
-          display: block;
         }
 
-        /* While loading, hide children visually but keep them in DOM (no layout shift) */
+        /* Children wrapper: does not modify layout, only toggles visibility */
         .loader-children.hidden {
           opacity: 0;
           pointer-events: none;
@@ -109,17 +131,14 @@ export default function Loader({ children }: Props) {
           transition: opacity 0.25s ease-in;
         }
 
-        /* --- Preserve ALL of your original animation keyframes and assignments ---
-           These target the SVG elements by ID and must remain globally available because
-           the keyframes reference element IDs inside the SVG. They are scoped to not
-           impact page layout because they only animate SVG attrs/IDs. */
+        /* --- Preserve ALL original animation keyframes and assignments ---
+           These target the SVG elements by ID and are required for the animation. */
 
-        /* --- Main Banner Keyframes --- */
         @keyframes animation_Banner_1_flow_6 {
             from { opacity: 1; }
             to { opacity: 0; } 
         }
-        
+
         @keyframes animation_BannerContent_3_0_flow_1 {
             from { transform: translate(0px, 0px) rotate(0deg); transform-origin: 1px 1px; x: 599px; y: 417px; width: 2px; height: 2px; rx: 1px; }
             to { transform: translate(0px, 0px) rotate(0deg); transform-origin: 32px 32px; x: 568px; y: 305px; width: 64px; height: 64px; rx: 32px; }
@@ -141,7 +160,6 @@ export default function Loader({ children }: Props) {
             to { opacity: 0; transform: translate(0px, 0px) rotate(0deg); transform-origin: 90px 32px; x: 510px; width: 180px; height: 64px; rx: 32px; }
         }
 
-        /* --- Image Circle Keyframes --- */
         @keyframes animation_ImageCircle_opacity_2 {
             from { opacity: 1; }
             to { opacity: 1; } 
@@ -151,7 +169,6 @@ export default function Loader({ children }: Props) {
             to { r: 0px; }
         }
 
-        /* --- Image Position Keyframes --- */
         @keyframes animation_GreenCircle_position_flow_1 {
             from { opacity: 0; cx: 600px; cy: 418px; }
             to { opacity: 1; cx: 600px; cy: 331px; }
@@ -169,7 +186,6 @@ export default function Loader({ children }: Props) {
             to { opacity: 0; cx: 663.5px; cy: 340px; }
         }
 
-        /* --- OWASP text keyframes --- */
         @keyframes animation_OWASP_Text_flow_5 {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -179,33 +195,32 @@ export default function Loader({ children }: Props) {
             to { opacity: 0; }
         }
 
-        /* --- Element Assignments --- */
         #Banner_1 {
-            animation: animation_Banner_1_flow_6 0.3s ease-out 2.7s forwards; 
+            animation: animation_Banner_1_flow_6 0.3s ease-out 2.7s forwards;
         }
 
         #loading-icon-image {
-            animation: 
+            animation:
                 animation_GreenCircle_position_flow_1 0.3s ease-in 0s forwards,
                 animation_GreenCircle_position_4 0.3s ease-out 1.3s forwards,
                 animation_GreenCircle_position_5 0.3s ease-out 1.6s forwards,
-                animation_GreenCircle_position_6 0.3s ease-out 2.7s forwards, 
+                animation_GreenCircle_position_6 0.3s ease-out 2.7s forwards,
                 animation_ImageCircle_opacity_2 0.3s ease-out 0.3s forwards,
-                animation_ImageCircle_shrink 0.3s ease-out 3s forwards;       
+                animation_ImageCircle_shrink 0.3s ease-out 3s forwards;
         }
 
         #BannerContent_3_0 {
-            animation: 
-                animation_BannerContent_3_0_flow_1 0.3s ease-in 0s forwards, 
-                animation_BannerContent_3_0_flow_4 0.3s ease-out 1.3s forwards, 
-                animation_BannerContent_3_0_flow_5 0.3s ease-out 1.6s forwards, 
-                animation_BannerContent_3_0_flow_6 0.3s ease-out 2.7s forwards, 
-                animation_BannerContent_3_0_flow_7 0.3s ease-out 3s forwards;  
+            animation:
+                animation_BannerContent_3_0_flow_1 0.3s ease-in 0s forwards,
+                animation_BannerContent_3_0_flow_4 0.3s ease-out 1.3s forwards,
+                animation_BannerContent_3_0_flow_5 0.3s ease-out 1.6s forwards,
+                animation_BannerContent_3_0_flow_6 0.3s ease-out 2.7s forwards,
+                animation_BannerContent_3_0_flow_7 0.3s ease-out 3s forwards;
         }
-        
+
         #owasp-text {
-            animation: 
-                animation_OWASP_Text_flow_5 0.3s ease-out 1.6s forwards, 
+            animation:
+                animation_OWASP_Text_flow_5 0.3s ease-out 1.6s forwards,
                 animation_OWASP_Text_flow_6 0.3s ease-out 2.7s forwards;
         }
       `}</style>
