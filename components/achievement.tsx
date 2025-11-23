@@ -5,10 +5,9 @@ import { Container } from "./container";
 import { achivementsContent } from "../Content/Achievements";
 
 /**
- * Glass UI horizontal slider for "Our Achievements".
- * - Uses existing achivementsContent
- * - Supports drag-to-scroll, keyboard navigation, and prev/next buttons
- * - Uses Tailwind classes consistent with repository styling
+ * Achievement slider / showcase (keeps existing layout & styles)
+ * - Safely derives year from item.date (if present) instead of relying on a non-existent `year` property.
+ * - Keeps Next/Image usage and Tailwind styling.
  */
 const Achievement = () => {
   const data = achivementsContent;
@@ -74,33 +73,56 @@ const Achievement = () => {
     el.scrollBy({ left: cardWidth() * count, behavior: "smooth" });
   };
 
+  const extractYear = (dateStr?: string) => {
+    if (!dateStr) return null;
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      return String(d.getFullYear());
+    } catch {
+      return null;
+    }
+  };
+
   return (
-    <Container className="px-0 md:px-2">
-      <div className="relative">
-        {/* Prev/Next buttons (glass effect) */}
+    <Container className="px-4 md:px-6 lg:px-8">
+      <div className="flex flex-col gap-4 mt-6 md:mt-10">
+        <h1 className="text-white font-figtree text-4xl sm:text-5xl md:text-6xl lg:text-[70px] font-medium leading-tight lg:leading-[81px] not-italic">
+          Our Achievements
+        </h1>
+        <div className="w-full h-[2px] bg-white/12" />
+        <div className="text-sm md:text-base font-normal text-[var(--muted-text)]">
+          Over the years we&apos;ve transformed the face of cybersecurity, therby
+          therefore realise regardless thereafter unrestored underestimated
+          variety of various undisputed achievments
+        </div>
+      </div>
+
+      <div className="relative mt-6">
+        {/* Prev button */}
         <div className="absolute -left-2 top-1/2 transform -translate-y-1/2 z-20">
           <button
-            className={`w-11 h-11 rounded-lg flex items-center justify-center border border-white/10 bg-white/3 backdrop-blur-md text-white transition ${canPrev ? 'opacity-100' : 'opacity-40 cursor-not-allowed'}`}
             onClick={() => scrollBy(-1)}
-            aria-label="Previous achievements"
+            aria-label="Previous achievement"
+            className={`w-11 h-11 rounded-lg flex items-center justify-center border border-white/10 bg-white/3 backdrop-blur-md text-white transition ${canPrev ? 'opacity-100' : 'opacity-40 cursor-not-allowed'}`}
             disabled={!canPrev}
           >
             ‹
           </button>
         </div>
 
+        {/* Next button */}
         <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 z-20">
           <button
-            className={`w-11 h-11 rounded-lg flex items-center justify-center border border-white/10 bg-white/3 backdrop-blur-md text-white transition ${canNext ? 'opacity-100' : 'opacity-40 cursor-not-allowed'}`}
             onClick={() => scrollBy(1)}
-            aria-label="Next achievements"
+            aria-label="Next achievement"
+            className={`w-11 h-11 rounded-lg flex items-center justify-center border border-white/10 bg-white/3 backdrop-blur-md text-white transition ${canNext ? 'opacity-100' : 'opacity-40 cursor-not-allowed'}`}
             disabled={!canNext}
           >
             ›
           </button>
         </div>
 
-        {/* Horizontal scroller */}
         <div
           ref={scrollerRef}
           className="flex gap-4 md:gap-6 overflow-x-auto pb-4 scroll-smooth scroll-snap-x snap-mandatory touch-pan-x"
@@ -116,34 +138,32 @@ const Achievement = () => {
           }}
           style={{ WebkitOverflowScrolling: "touch" }}
         >
-          {data.map((item, idx) => (
-            <article
-              key={idx}
-              data-ach-card
-              role="listitem"
-              className="flex-shrink-0 w-[280px] sm:w-[320px] max-w-[320px] scroll-snap-align-center rounded-2xl border border-[var(--border)] bg-white/5 backdrop-blur-md overflow-hidden shadow-lg"
-            >
-              <div className="w-full aspect-[2.1/1] bg-[#111] relative">
-                <Image
-                  src={item.imgUrl}
-                  fill
-                  alt={item.title}
-                  className="object-cover"
-                />
-              </div>
+          {data.map((item, idx) => {
+            const year = extractYear((item as any).date || (item as any).year);
+            return (
+              <article
+                key={idx}
+                data-ach-card
+                role="listitem"
+                className="flex-shrink-0 w-[280px] sm:w-[320px] max-w-[320px] scroll-snap-align-center rounded-2xl border border-[var(--border)] bg-white/5 backdrop-blur-md overflow-hidden shadow-lg"
+              >
+                <div className="w-full aspect-[2.1/1] bg-[#111] relative">
+                  <Image src={item.imgUrl} fill alt={item.title} className="object-cover" />
+                </div>
 
-              <div className="p-3">
-                <div className="flex justify-between items-center text-xs text-[var(--muted-text)] mb-2">
-                  <span className="font-medium">{item.title}</span>
-                  {item.year && <span className="text-xs px-2 py-1 rounded-full bg-white/3">{item.year}</span>}
+                <div className="p-3">
+                  <div className="flex justify-between items-center text-xs text-[var(--muted-text)] mb-2">
+                    <span className="font-medium">{item.title}</span>
+                    {year && <span className="text-xs px-2 py-1 rounded-full bg-white/3">{year}</span>}
+                  </div>
+                  <div className="text-sm text-white/90 font-semibold leading-tight">
+                    {item.title}
+                  </div>
+                  {item.description && <p className="text-sm text-[var(--muted-text)] mt-2">{item.description}</p>}
                 </div>
-                <div className="text-sm text-white/90 font-semibold leading-tight">
-                  {item.title}
-                </div>
-                {item.description && <p className="text-sm text-[var(--muted-text)] mt-2">{item.description}</p>}
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </div>
     </Container>
