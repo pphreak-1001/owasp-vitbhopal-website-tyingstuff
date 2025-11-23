@@ -26,7 +26,7 @@ export default function RootLayout({
       <body
         className={`${figtree.variable} antialiased`}
       >
-        {/* Wrap the entire visible app (Navbar, content, Footer) so loader hides everything until it completes */}
+        {/* Loader is a fixed overlay — children keep their layout */}
         <Loader>
           <Navbar />
           {children}
