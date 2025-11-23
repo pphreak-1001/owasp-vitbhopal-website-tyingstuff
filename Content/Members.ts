@@ -26,7 +26,7 @@ const boardMembers = [
   {
     name: "Shlok",
     position: "Secretary",
-    image: "/members/shlok.png",
+    image: "/members/somnath.png",
     href: "mailto:shlok.23bce11457@vitbhopal.ac.in",
   },
   {
