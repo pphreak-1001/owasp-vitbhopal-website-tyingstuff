@@ -1,5 +1,4 @@
-import AchievementCard from "@/components/achievementCard";
-import { achivementsContent } from "@/Content/Achievements";
+import Achievement from "@/components/achievement";
 import Header from "@/components/header";
 import { Container } from "@/components/container";
 
@@ -12,23 +11,13 @@ export default function Achievements() {
         variety of various undisputed achievments
       </Header>
 
-      <section className="w-full py-20">
-        <div className="w-full flex flex-col gap-12">
-          {achivementsContent.map((achievement, index) => (
-            <AchievementCard
-              key={index}
-              title={achievement.title}
-              description={achievement.description}
-              image={achievement.imgUrl}
-              gradientClass={
-                index % 2 === 0
-                  ? "bg-gradient-to-br from-orange-500 to-transparent"
-                  : "bg-gradient-to-br from-blue-500 to-cyan-400"
-              }
-            />
-          ))}
-        </div>
-      </section>
+      <h2 className='md:text-4xl text-3xl font-medium'>Our Achievements</h2>
+      <div className='w-full border-2 my-4 border-dashed border-white/12' />
+
+      {/* New slider-based achievements component */}
+      <div className="mt-12">
+        <Achievement />
+      </div>
     </Container>
   );
 }
