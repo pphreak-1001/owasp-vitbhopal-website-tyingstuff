@@ -72,8 +72,10 @@ const BugReportForm = () => {
       } else {
         setError(data?.error || data?.message || "Failed to submit bug report.");
       }
-    } catch (err: any) {
-      setError(err?.message || "Failed to submit bug report.");
+    } catch (err: unknown) {
+      // Avoid `any` — use unknown and derive a safe message
+      const message = err instanceof Error ? err.message : String(err ?? "Failed to submit bug report.");
+      setError(message || "Failed to submit bug report.");
     } finally {
       setLoading(false);
     }
