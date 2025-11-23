@@ -3,6 +3,7 @@ import { Figtree } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import Loader from "@/components/Loader";
 
 const figtree = Figtree({
   variable: "--font-figtree",
@@ -25,9 +26,12 @@ export default function RootLayout({
       <body
         className={`${figtree.variable} antialiased`}
       >
-        <Navbar />
-        {children}
-        <Footer />
+        {/* Wrap the entire visible app (Navbar, content, Footer) so loader hides everything until it completes */}
+        <Loader>
+          <Navbar />
+          {children}
+          <Footer />
+        </Loader>
       </body>
     </html>
   );
